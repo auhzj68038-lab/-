@@ -1,0 +1,56 @@
+# AI編集部：plan.json がプッシュされたら自動で 品質チェック → 書き出し → ドライブ納品
+name: render-and-deliver
+
+on:
+  push:
+    paths: ["content/**/plan.json", "content/**/caption.txt"]
+  workflow_dispatch:
+    inputs:
+      episode:
+        description: "エピソードフォルダ名（例: 2026-09-27_ep001_mini_ramen）"
+        required: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+      GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+      GDRIVE_REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
+      GDRIVE_FOLDER_ID: ${{ vars.GDRIVE_FOLDER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: bash pipeline/setup.sh
+      - name: 対象エピソードを特定
+        id: eps
+        run: |
+          if [ -n "${{ inputs.episode }}" ]; then
+            echo "list=${{ inputs.episode }}" >> "$GITHUB_OUTPUT"
+          else
+            if git rev-parse -q --verify HEAD~1 >/dev/null; then
+              files=$(git diff --name-only HEAD~1 HEAD -- content)
+            else
+              files=$(git ls-files content)
+            fi
+            echo "list=$(echo "$files" | cut -d/ -f2 | sort -u | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+          fi
+      - name: 品質チェック → 素材取得 → 書き出し → 納品
+        run: |
+          for ep in ${{ steps.eps.outputs.list }}; do
+            [ -f "content/$ep/plan.json" ] || continue
+            python pipeline/qa.py "content/$ep"
+            if [ -n "$GDRIVE_REFRESH_TOKEN" ]; then python pipeline/drive.py pull "$ep"; fi
+            python pipeline/render.py "content/$ep/plan.json"
+            if [ -n "$GDRIVE_REFRESH_TOKEN" ]; then python pipeline/drive.py push "$ep"; fi
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: videos
+          path: output/
+          retention-days: 14

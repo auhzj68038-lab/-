@@ -1,0 +1,31 @@
+{
+  "title": "1円玉サイズのラーメン屋、開店します！",
+  "output_name": "ep001_mini_ramen",
+  "size": [1080, 1920],
+  "fps": 30,
+  "bgm": null,
+  "cover_time": 0.4,
+  "scenes": [
+    {"source": "01_hook.mp4", "duration": 1.6, "effect": "punch", "sfx": "boom",
+     "placeholder": {"label": "指先にラーメン丼を乗せたアップ", "color": "#FF5E3A", "color2": "#FFD23F"},
+     "telop": [{"text": "え、これ\nラーメン屋!?", "style": "hook", "position": "center"}]},
+    {"source": "02_coin.mp4", "duration": 2.0, "effect": "zoom_in", "sfx": "pop",
+     "placeholder": {"label": "1円玉と丼を並べて比較", "color": "#2B2D6E", "color2": "#6C63FF"},
+     "telop": [{"text": "サイズ感はコレ", "style": "normal", "position": "top"},
+               {"text": "1円玉と同じ!!", "style": "punch", "position": "bottom", "at": 0.7}]},
+    {"source": "03_shop.mp4", "duration": 2.4, "effect": "pan_right", "sfx": "whoosh", "transition": "flash",
+     "placeholder": {"label": "店全体を横に舐めるように撮影", "color": "#1B998B", "color2": "#C5F277"},
+     "telop": [{"text": "のれんも手作り", "style": "normal", "position": "top"}]},
+    {"source": "04_noodle.mp4", "duration": 2.6, "effect": "zoom_in", "sfx": "pop",
+     "placeholder": {"label": "ピンセットで麺を持ち上げる", "color": "#E4572E", "color2": "#F3A712"},
+     "telop": [{"text": "麺、1本ずつ\n手作業です", "style": "normal", "position": "top"},
+               {"text": "指プルプル…", "style": "info", "position": "bottom", "at": 1.2}]},
+    {"source": "05_counter.mp4", "duration": 2.2, "effect": "shake", "sfx": "ding",
+     "placeholder": {"label": "カウンターに小人フィギュアを座らせる", "color": "#3D348B", "color2": "#F18701"},
+     "telop": [{"text": "本日のお客さん\n第1号!!", "style": "punch", "position": "center"}]},
+    {"source": "06_q.mp4", "duration": 2.4, "effect": "zoom_out", "sfx": "pop",
+     "placeholder": {"label": "店を引きで全体ショット", "color": "#0B3954", "color2": "#BFD7EA"},
+     "telop": [{"text": "制作時間、何時間だと思う？", "style": "question", "position": "top"},
+               {"text": "コメントで予想してね", "style": "cta", "position": "bottom", "at": 0.8}]}
+  ]
+}

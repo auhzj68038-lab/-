@@ -1,0 +1,6 @@
+output/
+footage/
+pipeline/fonts/
+__pycache__/
+client_secret*.json
+.env
