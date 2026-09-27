@@ -1,0 +1,7 @@
+flask>=3.0
+requests>=2.31
+sounddevice>=0.4
+soundfile>=0.12
+openai>=1.40
+obsws-python>=1.7
+python-dotenv>=1.0

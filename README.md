@@ -28,6 +28,7 @@ TikTok [@sho1249003](https://www.tiktok.com/@sho1249003)
 | `pipeline/drive.py` | Googleドライブから素材取得 / 完成動画を納品 |
 | `.github/workflows/render.yml` | push で 品質チェック→書き出し→納品 を自動実行 |
 | `content/<日付>_epNNN_*/` | 1本ごとの research / script / plan.json / caption / 投稿チェックリスト |
+| `livestream/` | AIキャラの全自動ライブ配信（毎日22〜23時・わんコメ→OpenAI→VOICEVOX→VTube Studio/OBS） |
 | `docs/` | 市場調査・業務フロー・ツール一覧・ブランドガイド・初期設定・数値ログ |
 
 ## ローカルで動かす場合
