@@ -1,0 +1,29 @@
+[project]
+name = "shorts-prep"
+version = "0.1.0"
+description = "YouTube Shorts 編集準備（スプレッドシート最新行 → フォルダ作成 → 素材DL → Premiere テンプレ複製）"
+requires-python = ">=3.11"
+dependencies = [
+    "google-api-python-client>=2.100",
+    "google-auth>=2.23",
+    "google-auth-oauthlib>=1.1",
+    "httpx>=0.27",
+    "keyring>=24",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+shorts-prep = "shorts_prep.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/shorts_prep"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

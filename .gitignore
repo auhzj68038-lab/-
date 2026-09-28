@@ -1,0 +1,18 @@
+# 認証情報は絶対にコミットしない（通常はキーチェーンに保存されます）
+client_secret*.json
+credentials*.json
+token*.json
+*.pem
+
+# 個人設定
+config.toml
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+dist/
+*.egg-info/
+
+.DS_Store

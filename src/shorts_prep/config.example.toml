@@ -1,0 +1,38 @@
+# shorts-prep 設定ファイル
+# 置き場所: ~/Library/Application Support/shorts_prep/config.toml
+# （`shorts-prep init-config` で自動作成されます）
+# ここには秘密情報を書かないでください。認証情報はキーチェーンに保存されます。
+
+[sheet]
+# スプレッドシートURLの /d/ と /edit の間の文字列
+spreadsheet_id = "ここにスプレッドシートIDを貼り付け"
+# 読み込むシート（タブ）名
+sheet_name = "シート1"
+
+[columns]
+# 1行目（見出し行）の列名を指定します。
+date = "日付"
+title = "タイトル"
+# 素材URLの列。複数列を指定可。1セルに改行・カンマ・空白区切りで複数URLも可。
+assets = ["素材URL"]
+# 台本の列（任意）。指定し、かつ列が存在すれば script.txt として保存します。空文字で無効。
+script = ""
+
+[paths]
+# 作業フォルダを作る場所
+output_root = "~/Desktop/プレミア/ショート動画自動作成"
+# Premiere テンプレート。空なら output_root 直下の .prproj を1つだけ自動検出します。
+template = ""
+
+[download]
+# ファイル1つあたりの上限（MB）
+max_size_mb = 2048
+timeout_sec = 60
+retries = 3
+# 許可する Content-Type の先頭一致
+allowed_content_types = ["image/", "video/", "audio/", "application/octet-stream"]
+
+[after]
+# 完了後に Finder でフォルダを開く / Premiere プロジェクトを開く
+open_folder = true
+open_premiere = true
