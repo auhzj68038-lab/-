@@ -40,6 +40,10 @@ def import_client_secret(path: Path) -> None:
     _delete(KEY_TOKEN)
 
 
+def has_client_secret() -> bool:
+    return bool(_keyring().get_password(KEYRING_SERVICE, KEY_CLIENT))
+
+
 def logout() -> None:
     _delete(KEY_TOKEN)
 

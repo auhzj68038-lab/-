@@ -28,69 +28,62 @@
 - ダウンロードするのは `https://` のURLだけです。リダイレクト先も同じようにチェックします。ファイルの種類（画像・動画・音声）とサイズの上限も確認します。
 - ログは `~/Library/Logs/shorts_prep/` に出力します。URLの `?` 以降（署名トークンなど）は記録しません。
 
-## 初回セットアップ（1回だけ）
+## 初回セットアップ（1回だけ・約10分）
 
-### 1. 必要なツールのインストール
+### 手順A. Google Cloud で「鍵ファイル」を作る（ブラウザ操作・5分）
 
-```sh
-# uv（Python の実行環境の管理ツール）
-curl -LsSf https://astral.sh/uv/install.sh | sh
+会社の Google アカウントでログインした状態で、以下を順に行います。
 
-# このリポジトリを好きな場所に置く
-git clone <このリポジトリ> ~/shorts-prep
-cd ~/shorts-prep
-uv sync
-```
+1. <https://console.cloud.google.com/projectcreate> を開き、プロジェクト名（例: `shorts-prep`）を入力して「作成」を押します。
+2. <https://console.cloud.google.com/apis/library/sheets.googleapis.com> を開き、「有効にする」を押します。
+3. <https://console.cloud.google.com/auth/overview> を開き、「開始」を押します。
+   - アプリ名は `shorts-prep`、サポートメールは自分のアドレスにします。
+   - 対象（ユーザーの種類）は **「内部」** を選びます。組織内のアカウントしか使えなくなり、Google の審査も不要になります。
+4. <https://console.cloud.google.com/auth/clients> を開き、「クライアントを作成」→ アプリケーションの種類 **「デスクトップ アプリ」** → 「作成」→「JSON をダウンロード」を押します。
+   - `client_secret_〜.json` がダウンロードフォルダに保存されます。
+   - このファイルは鍵なので、人に渡さないでください。
 
-### 2. Google Cloud の設定（Google Workspace 向け）
+> 組織の設定で止められた場合は、Workspace の管理者に「管理コンソール → セキュリティ → API の制御」で、このクライアント ID を許可してもらってください。
 
-1. [Google Cloud Console](https://console.cloud.google.com/) で、**会社の Workspace アカウント**を使ってプロジェクトを作ります。
-2. 「API とサービス」→「ライブラリ」で **Google Sheets API** を有効にします。
-3. 「OAuth 同意画面」で、ユーザーの種類に **「内部」** を選びます。
-   - 「内部」にすると、組織内のアカウントしか使えず、Google の審査も不要です。
-   - スコープは `.../auth/spreadsheets.readonly` だけを追加します。
-4. 「認証情報」→「認証情報を作成」→「OAuth クライアント ID」で、種類を **「デスクトップ アプリ」** にして作成し、JSON ファイルをダウンロードします。
-5. 組織のポリシーで外部アプリが制限されている場合は、Workspace の管理者に上記のクライアント ID を許可してもらってください（管理コンソール →「セキュリティ」→「API の制御」）。
+### 手順B. このツールをダウンロードする
 
-### 3. 認証情報の登録と設定
+GitHub のこのリポジトリのページで「Code」→「Download ZIP」を押し、ダウンロードした ZIP をダブルクリックして展開します。
 
-```sh
-# ダウンロードした JSON をキーチェーンに取り込み、ブラウザでログインする
-uv run shorts-prep setup --client-secret ~/Downloads/client_secret_xxxx.json
-rm ~/Downloads/client_secret_xxxx.json   # 取り込み後は不要
+### 手順C. セットアップを実行する（コピペ1回）
 
-# 設定ファイルを作成して編集する
-uv run shorts-prep init-config
-open -e ~/Library/Application\ Support/shorts_prep/config.toml
-```
+1. 「ターミナル」を開きます（Spotlight で `ターミナル` と入力）。
+2. `zsh ` と入力します（最後に半角スペースを1つ）。
+3. 展開したフォルダの中の **`セットアップ.command`** を、ターミナルの画面にドラッグ＆ドロップして Enter を押します。
 
-`config.toml` で最低限設定する項目は次のとおりです。
+あとは画面の質問に答えるだけです。セットアップが自動で行うことは次のとおりです。
 
-| 項目 | 内容 |
+| 自動で行うこと | あなたが行うこと |
 |---|---|
-| `spreadsheet_id` | スプレッドシートURLの `/d/` と `/edit` の間の文字列 |
-| `sheet_name` | 読み込むシート（タブ）の名前 |
-| `[columns]` | 1行目（見出し行）の列名。初期値は `日付` / `タイトル` / `素材URL` |
+| ツールを `~/shorts-prep` に配置し、必要なライブラリをインストール | なし |
+| 設定ファイルを作成 | スプレッドシートの**URLを貼り付け**、シート名を入力 |
+| 鍵ファイルをキーチェーンに保存 | ダウンロードフォルダの鍵ファイルを使うか聞かれたら Enter |
+| Google ログイン | 開いたブラウザで「許可」を押す |
+| `~/Desktop/プレミア/ショート動画自動作成/` を作成 | 開いたフォルダにテンプレートの `.prproj` を置いて Enter |
+| デスクトップに起動用の「ショート動画準備」を作成し、ドライランで動作確認 | なし |
 
-素材URLは、1つのセルに改行・カンマ・空白で区切って複数入れられます。複数の列（例: `assets = ["素材1", "素材2"]`）に分けることもできます。
+完了したら、ダウンロードフォルダの `client_secret_〜.json` は削除して構いません。
 
-### 4. テンプレートを置く
+#### スプレッドシートの形式
 
-`~/Desktop/プレミア/ショート動画自動作成/` の直下に、テンプレートの `.prproj` を**1つだけ**置きます。
-複数置く場合は、`config.toml` の `[paths] template` で使うものを指定してください。
+1行目は見出し行にしてください。ツールは**最終行**を読み込みます。
 
-### 5. 動作確認（何も作らないドライラン）
+| 日付 | タイトル | 素材URL |
+|---|---|---|
+| 2026/9/28 | 猫の動画 | https://…/a.jpg<br>https://…/b.mp4 |
 
-```sh
-uv run shorts-prep run --dry-run
-```
+- 素材URLは、1つのセルに改行・カンマ・空白で区切って複数入れられます。
+- 列名を変えたい場合や、台本の列を使いたい場合は、`~/Library/Application Support/shorts_prep/config.toml` の `[columns]` を編集してください。
 
 ## 毎日の使い方（1クリック）
 
 どちらかの方法で起動できます。
 
-- **A. ダブルクリック**：`launcher/ショート動画準備.command` を Dock やデスクトップに置いてダブルクリックします。
-  初回だけ `chmod +x launcher/ショート動画準備.command` を実行し、右クリック →「開く」で許可してください。
+- **A. ダブルクリック**：デスクトップの「ショート動画準備」をダブルクリックします（セットアップで自動作成されます）。
 - **B. ショートカット.app**：新規ショートカットに「シェルスクリプトを実行」を追加し、次の内容を入れます。メニューバーやキーボードショートカットから起動できます。
   ```sh
   export PATH="$HOME/.local/bin:/opt/homebrew/bin:$PATH"
@@ -107,6 +100,7 @@ uv run shorts-prep run --dry-run
 | `shorts-prep` / `shorts-prep run` | 最終行から作業フォルダを準備する |
 | `shorts-prep run --dry-run` | 何も作らずに、作る予定のものだけを表示する |
 | `shorts-prep run --no-open` | 完了後に Finder と Premiere を開かない |
+| `shorts-prep wizard` | 初回セットアップを対話形式で行う（既存の設定は上書きしない） |
 | `shorts-prep init-config` | 設定ファイルのひな形を作る（既存の設定は上書きしない） |
 | `shorts-prep setup --client-secret FILE` | OAuth クライアント情報を登録してログインする |
 | `shorts-prep login` / `logout` | ログインする / 保存したトークンを削除する |

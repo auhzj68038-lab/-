@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -55,6 +56,16 @@ def load_config(path: Path) -> Config:
     return parse_config(raw)
 
 
+_SHEET_URL = re.compile(r"/spreadsheets/d/([A-Za-z0-9_-]+)")
+
+
+def extract_spreadsheet_id(text: str) -> str:
+    """スプレッドシートのURLをそのまま貼られてもIDを取り出す。"""
+    text = text.strip()
+    m = _SHEET_URL.search(text)
+    return m.group(1) if m else text
+
+
 def parse_config(raw: dict) -> Config:
     sheet = raw.get("sheet", {})
     cols = raw.get("columns", {})
@@ -62,7 +73,7 @@ def parse_config(raw: dict) -> Config:
     dl = raw.get("download", {})
     after = raw.get("after", {})
 
-    spreadsheet_id = str(sheet.get("spreadsheet_id", "")).strip()
+    spreadsheet_id = extract_spreadsheet_id(str(sheet.get("spreadsheet_id", "")))
     if not spreadsheet_id or "ここに" in spreadsheet_id:
         raise PrepError("設定ファイルの [sheet] spreadsheet_id を設定してください。")
 

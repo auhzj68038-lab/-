@@ -2,6 +2,7 @@
 
     shorts-prep                 最新行から作業フォルダを準備（= shorts-prep run）
     shorts-prep run --dry-run   何も作らずに計画だけ表示
+    shorts-prep wizard          初回セットアップを対話形式でまとめて実行
     shorts-prep init-config     設定ファイルのひな形を作成
     shorts-prep setup --client-secret FILE   OAuth クライアント情報をキーチェーンへ登録
     shorts-prep login / logout  Google ログイン / トークン削除
@@ -10,14 +11,17 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
+import re
+import shlex
 import sys
 from importlib import resources
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from . import auth, macos, premiere, safefs
-from .config import LOG_DIR, Config, config_path, load_config
+from .config import LOG_DIR, Config, config_path, extract_spreadsheet_id, load_config
 from .download import DownloadOptions, download_all
 from .errors import PrepError
 from .naming import folder_name
@@ -65,6 +69,7 @@ def _parse_args(argv):
     sub.add_parser("login", help="Google にログイン").set_defaults(func=cmd_login)
     sub.add_parser("logout", help="保存済みトークンを削除").set_defaults(func=cmd_logout)
     sub.add_parser("init-config", help="設定ファイルのひな形を作成").set_defaults(func=cmd_init_config)
+    sub.add_parser("wizard", help="対話形式で初回セットアップをまとめて行う").set_defaults(func=cmd_wizard)
 
     args = p.parse_args(argv)
     if args.cmd is None:
@@ -99,6 +104,96 @@ def cmd_init_config(args) -> int:
         return 0
     print(f"設定ファイルを作成しました。spreadsheet_id などを編集してください:\n{dst}")
     return 0
+
+
+def cmd_wizard(args) -> int:
+    print("=== ショート動画準備: 初回セットアップ ===\n")
+
+    # 1. 設定ファイル
+    path = config_path(args.config)
+    print("[1/5] 設定ファイル")
+    if path.exists():
+        print(f"  既存の設定を使います（上書きしません）: {path}")
+    else:
+        url = _ask("  スプレッドシートのURLを貼り付けて Enter")
+        sid = extract_spreadsheet_id(url)
+        if not sid:
+            raise PrepError("スプレッドシートのURLが空です。")
+        sheet = _ask("  シート（タブ）の名前", default="シート1")
+        text = resources.files("shorts_prep").joinpath("config.example.toml").read_text(encoding="utf-8")
+        text = re.sub(r"(?m)^spreadsheet_id = .*$", lambda m: f"spreadsheet_id = {_toml_str(sid)}", text, count=1)
+        text = re.sub(r"(?m)^sheet_name = .*$", lambda m: f"sheet_name = {_toml_str(sheet)}", text, count=1)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        safefs.write_bytes_exclusive(path, text.encode("utf-8"))
+        print(f"  作成しました: {path}")
+    cfg = load_config(path)
+
+    # 2. 作業フォルダ
+    print("\n[2/5] 作業フォルダ")
+    cfg.output_root.mkdir(parents=True, exist_ok=True)
+    print(f"  {cfg.output_root}")
+
+    # 3. Google ログイン
+    print("\n[3/5] Google ログイン")
+    if auth.has_client_secret():
+        print("  OAuth クライアント情報は登録済みです。")
+    else:
+        secret = _find_client_secret()
+        auth.import_client_secret(secret)
+        print(f"  キーチェーンに保存しました。元のファイルは削除して構いません: {secret}")
+    print("  ブラウザが開いたら、会社の Google アカウントで「許可」を押してください。")
+    auth.get_credentials(interactive=True)
+    print("  ログイン完了。")
+
+    # 4. テンプレート
+    print("\n[4/5] Premiere テンプレート")
+    while True:
+        try:
+            t = premiere.find_template(cfg)
+            print(f"  使用するテンプレート: {t.name}")
+            break
+        except PrepError as e:
+            print(f"  {e}")
+            macos.open_path(cfg.output_root)
+            if _ask("  テンプレートを置いたら Enter（スキップは s）", default="").lower() == "s":
+                break
+
+    # 5. 動作確認
+    print("\n[5/5] 動作確認（ドライラン・何も作成しません）")
+    try:
+        cmd_run(argparse.Namespace(config=args.config, dry_run=True, no_open=True))
+    except PrepError as e:
+        print(f"  ⚠ {e}")
+        print("  上記を直してから `shorts-prep run --dry-run` で再確認してください。")
+        return 1
+
+    print("\nセットアップ完了！ デスクトップの「ショート動画準備」をダブルクリックすると実行されます。")
+    return 0
+
+
+def _ask(prompt: str, default: str | None = None) -> str:
+    suffix = f" [{default}]" if default else ""
+    try:
+        ans = input(f"{prompt}{suffix}: ").strip()
+    except EOFError as e:
+        raise PrepError("入力が中断されました。") from e
+    return ans or (default or "")
+
+
+def _toml_str(s: str) -> str:
+    return json.dumps(s, ensure_ascii=False)  # JSON の文字列は TOML の基本文字列として有効
+
+
+def _find_client_secret() -> Path:
+    found = sorted(Path("~/Downloads").expanduser().glob("client_secret*.json"))
+    if len(found) == 1:
+        if _ask(f"  {found[0].name} を使いますか？ (Y/n)", default="y").lower().startswith("y"):
+            return found[0]
+    raw = _ask("  ダウンロードした client_secret の JSON をこの画面にドラッグ＆ドロップして Enter")
+    parts = shlex.split(raw) if raw else []
+    if len(parts) != 1:
+        raise PrepError("ファイルのパスを1つだけ指定してください。")
+    return Path(parts[0]).expanduser()
 
 
 def cmd_setup(args) -> int:
