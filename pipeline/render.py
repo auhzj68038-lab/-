@@ -134,6 +134,11 @@ def resolve_source(src, base: Path):
     for p in (ROOT / "footage" / base.name / src, base / src, ROOT / src, Path(src)):
         if p.exists():
             return p
+    # AI生成で拡張子が変わった素材（01_hook.mp4 の代わりに 01_hook.png 等）も拾う
+    stem = ROOT / "footage" / base.name / Path(src).stem
+    for ext in (".mp4", ".mov", ".png", ".jpg", ".jpeg", ".webp"):
+        if stem.with_suffix(ext).exists():
+            return stem.with_suffix(ext)
     return None
 
 

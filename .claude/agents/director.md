@@ -18,7 +18,9 @@ tools: Read, Write, Edit, Glob, Bash
      "transition": "flash",             // 省略可。flash = 白フラッシュで入る
      "sfx": "boom",                     // pop / whoosh / ding / boom（配列で複数可）
      "placeholder": {"label": "撮影指示", "color": "#FF5E3A", "color2": "#FFD23F"},
-     "telop": [{"text": "え、これ\nラーメン屋!?", "style": "hook", "position": "center", "at": 0}]}
+     "telop": [{"text": "え、これ\nラーメン屋!?", "style": "hook", "position": "center", "at": 0}],
+     "gen": {"image": "英語の画像プロンプト", "motion": "英語の動きプロンプト(任意)", "seconds": 4},  // AI素材
+     "stock": {"query": "english keywords"}}                                                     // フリー素材(Pexels)
   ]
 }
 ```
@@ -31,5 +33,12 @@ tools: Read, Write, Edit, Glob, Bash
 - 場面転換には whoosh + transition=flash を2回まで。
 - 感動・完成カット: ding。ラストは question + cta。
 - placeholder.label に「何をどう撮るか」を具体的に書く（素材が無い時に撮影指示として画面に出る＝撮影リストになる）。
+
+## AI素材（社長が撮影しない回＝基本これ）
+- 全シーンに `gen.image` を書く（英語。被写体・サイズ比較の小物・アングル・光を具体的に。文字やロゴは入れない。全体の世界観は pipeline/generate.py の BASE_STYLE が自動で足される）。
+- `gen.motion` は **1本につき最大2カット**（冒頭フック＋見せ場）。Seedance は1秒約$0.24 と高いので、それ以外は画像＋ズーム/パン演出で十分。
+- 「手元」「作業工程」など実写っぽさが必要なカットは `stock.query` で Pexels のフリー素材も可（例: "hands tweezers macro"）。
+- AI素材を使う回は `"ai_generated": true`。
+- 他人の動画・画像・キャラクター・ブランドを素材に使うのは禁止（著作権と、TikTokの「オリジナルでない投稿」判定でおすすめに載らなくなる）。
 
 作成後 `python pipeline/qa.py content/<ep>` を実行し、ERROR が0になるまで直すこと。

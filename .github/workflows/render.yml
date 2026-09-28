@@ -1,4 +1,4 @@
-# AI編集部：plan.json がプッシュされたら自動で 品質チェック → 書き出し → ドライブ納品
+# AI編集部：plan.json がプッシュされたら自動で 品質チェック → AI素材生成(Gemini/Seedance/Pexels) → 書き出し → ドライブ納品
 name: render-and-deliver
 
 on:
@@ -19,10 +19,14 @@ jobs:
       GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
       GDRIVE_REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
       GDRIVE_FOLDER_ID: ${{ vars.GDRIVE_FOLDER_ID }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      FAL_KEY: ${{ secrets.FAL_KEY }}
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+      MAX_MOTION_SECONDS: ${{ vars.MAX_MOTION_SECONDS || '10' }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -33,19 +37,23 @@ jobs:
           if [ -n "${{ inputs.episode }}" ]; then
             echo "list=${{ inputs.episode }}" >> "$GITHUB_OUTPUT"
           else
-            if git rev-parse -q --verify HEAD~1 >/dev/null; then
+            before="${{ github.event.before }}"
+            if [ -n "$before" ] && git cat-file -e "$before^{commit}" 2>/dev/null; then
+              files=$(git diff --name-only "$before" HEAD -- content)
+            elif git rev-parse -q --verify HEAD~1 >/dev/null; then
               files=$(git diff --name-only HEAD~1 HEAD -- content)
             else
               files=$(git ls-files content)
             fi
             echo "list=$(echo "$files" | cut -d/ -f2 | sort -u | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
           fi
-      - name: 品質チェック → 素材取得 → 書き出し → 納品
+      - name: 品質チェック → 素材取得/AI生成 → 書き出し → 納品
         run: |
           for ep in ${{ steps.eps.outputs.list }}; do
             [ -f "content/$ep/plan.json" ] || continue
             python pipeline/qa.py "content/$ep"
             if [ -n "$GDRIVE_REFRESH_TOKEN" ]; then python pipeline/drive.py pull "$ep"; fi
+            python pipeline/generate.py "content/$ep"
             python pipeline/render.py "content/$ep/plan.json"
             if [ -n "$GDRIVE_REFRESH_TOKEN" ]; then python pipeline/drive.py push "$ep"; fi
           done
