@@ -5,19 +5,18 @@ TikTok [@sho1249003](https://www.tiktok.com/@sho1249003)
 **副業の短い時間でも毎週回せる**ようにした仕組みです。
 
 ```
-[左腕が毎週土曜に自動実行]
-市場調査 → 台本 → 構成 → AI素材生成 → 動画作成(テロップ・効果音・演出) → 品質チェック → ドライブ納品
- リサ     ツムギ   カット   Gemini+Seedance   ヘンシュ                          チェック       ポスト
-                                                                              ↓
-                                                        [社長 週30分] 確認 → 予約投稿 → 数値を送る
+市場調査 → 台本 → 構成 → 素材オーダー表 → [社長: Geminiアプリで画像3枚] → 動画作成(テロップ・効果音・演出) → 品質チェック → ドライブ納品
+ リサ     ツムギ   カット   自動                                                ヘンシュ(自動)                     チェック       ポスト
 ```
+**追加課金ゼロ**（Claudeの月額プラン＋無料ツールだけ）で回る設計です。
 
 ## 社長（あなた）がやること：週30分
-1. 日曜にドライブ「完成動画」で4本を確認（10分）
-2. TikTok Studio で予約投稿（15分）
-3. 数値のスクショを Claude に送る（5分）
+1. 土曜：Claudeに「今週分つくって」（1分）
+2. 土曜：素材オーダー表のコピペ文を Gemini アプリに貼って画像を作り、ドライブへ（12分）
+3. 日曜：完成動画を確認 → TikTok Studio で予約投稿（15分）
+4. 日曜：数値のスクショを Claude に送る（3分）
 
-最初の1回だけ [docs/05_setup.md](docs/05_setup.md) の初期設定（約40分）が必要です。詳細は [docs/02_workflow.md](docs/02_workflow.md)。
+最初の1回だけ [docs/05_setup.md](docs/05_setup.md) の初期設定（約25分・カード登録なし）が必要です。詳細は [docs/02_workflow.md](docs/02_workflow.md)。
 
 ## 中身
 | パス | 内容 |
@@ -26,11 +25,12 @@ TikTok [@sho1249003](https://www.tiktok.com/@sho1249003)
 | `.claude/skills/make-video` | 全工程を1コマンドで回す進行役 |
 | `.claude/skills/weekly-review` | 週次の数値振り返り→勝ちパターン更新 |
 | `pipeline/render.py` | 構成表(plan.json)→縦型動画。テロップ6種・ズーム/パン/揺れ・フラッシュ・効果音合成・カバー画像 |
-| `pipeline/generate.py` | AI素材生成：Gemini（Nano Banana）画像 → Seedance 動画化 / Pexels フリー素材 |
-| `.claude/skills/autopilot` | 左腕（毎週の自動ルーチン）の業務手順 |
+| `pipeline/order_sheet.py` | 素材オーダー表：Geminiアプリにコピペするだけのプロンプト集 |
+| `pipeline/generate.py` | （将来用・有料API）Gemini API / Seedance API で素材も全自動化。鍵を入れない限り動かない |
+| `.claude/skills/autopilot` | 「今週分つくって」の業務手順 |
 | `pipeline/qa.py` | 伸びる型のルールで自動チェック（冒頭フック・尺・文字数・CTA・ハッシュタグ） |
 | `pipeline/drive.py` | Googleドライブから素材取得 / 完成動画を納品 |
-| `.github/workflows/render.yml` | push で 品質チェック→書き出し→納品 を自動実行 |
+| `.github/workflows/render.yml` | push と2時間ごとに 品質チェック→素材取得→書き出し→納品 を自動実行（無料） |
 | `content/<日付>_epNNN_*/` | 1本ごとの research / script / plan.json / caption / 投稿チェックリスト |
 | `docs/` | 市場調査・業務フロー・ツール一覧・ブランドガイド・初期設定・数値ログ |
 

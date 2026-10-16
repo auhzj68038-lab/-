@@ -52,6 +52,10 @@ def check(ep_dir: Path) -> int:
         if src and not resolve_source(src, ep_dir):
             infos.append(f"シーン{i}: 素材未着 footage/{ep_dir.name}/{src} → 仮画面で書き出し")
 
+    images = {Path(s["source"]).stem for s in scenes if s.get("gen")}
+    if len(images) > 3:
+        warns.append(f"AI画像が{len(images)}枚（社長の作業を減らすため3枚まで・crop で使い回し推奨）")
+
     last = scenes[-1].get("telop") or []
     last = [last] if isinstance(last, dict) else last
     if not any(t.get("style") in ("cta", "question") for t in last):

@@ -1,14 +1,22 @@
-# AI編集部：plan.json がプッシュされたら自動で 品質チェック → AI素材生成(Gemini/Seedance/Pexels) → 書き出し → ドライブ納品
+# AI編集部（すべて無料枠で動く：公開リポジトリの GitHub Actions は無料・無制限）
+#  - plan.json が push されたら：品質チェック → 素材オーダー表をドライブ「素材/<ep>」へ → 仮動画を「完成動画/<ep>」へ
+#  - 2時間ごと：ドライブ「素材/<ep>」に新しい画像/動画が入ったエピソードだけ書き出し直して納品
 name: render-and-deliver
 
 on:
   push:
     paths: ["content/**/plan.json", "content/**/caption.txt"]
+  schedule:
+    - cron: "23 */2 * * *"
   workflow_dispatch:
     inputs:
       episode:
-        description: "エピソードフォルダ名（例: 2026-09-27_ep001_mini_ramen）"
-        required: true
+        description: "エピソードフォルダ名（例: 2026-09-27_ep001_mini_ramen）。空なら素材が新しく入った回すべて"
+        required: false
+
+concurrency:
+  group: render
+  cancel-in-progress: false
 
 jobs:
   render:
@@ -19,10 +27,11 @@ jobs:
       GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
       GDRIVE_REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
       GDRIVE_FOLDER_ID: ${{ vars.GDRIVE_FOLDER_ID }}
+      # 有料API（任意・既定は未設定＝課金ゼロ）。キーを登録しない限り一切呼ばれません
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       FAL_KEY: ${{ secrets.FAL_KEY }}
       PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-      MAX_MOTION_SECONDS: ${{ vars.MAX_MOTION_SECONDS || '10' }}
+      MAX_MOTION_SECONDS: ${{ vars.MAX_MOTION_SECONDS || '0' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,35 +39,56 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: bash pipeline/setup.sh
       - name: 対象エピソードを特定
         id: eps
         run: |
-          if [ -n "${{ inputs.episode }}" ]; then
+          if [ "${{ github.event_name }}" = "schedule" ] || { [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -z "${{ inputs.episode }}" ]; }; then
+            echo "mode=changed" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ inputs.episode }}" ]; then
+            echo "mode=list" >> "$GITHUB_OUTPUT"
             echo "list=${{ inputs.episode }}" >> "$GITHUB_OUTPUT"
           else
             before="${{ github.event.before }}"
             if [ -n "$before" ] && git cat-file -e "$before^{commit}" 2>/dev/null; then
               files=$(git diff --name-only "$before" HEAD -- content)
-            elif git rev-parse -q --verify HEAD~1 >/dev/null; then
-              files=$(git diff --name-only HEAD~1 HEAD -- content)
             else
               files=$(git ls-files content)
             fi
+            echo "mode=push" >> "$GITHUB_OUTPUT"
             echo "list=$(echo "$files" | cut -d/ -f2 | sort -u | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
           fi
-      - name: 品質チェック → 素材取得/AI生成 → 書き出し → 納品
+      - name: ドライブ未設定なら定期実行はスキップ
+        id: gate
         run: |
-          for ep in ${{ steps.eps.outputs.list }}; do
+          if [ "${{ steps.eps.outputs.mode }}" = "changed" ] && [ -z "$GDRIVE_REFRESH_TOKEN" ]; then
+            echo "skip=1" >> "$GITHUB_OUTPUT"; echo "ドライブの鍵が未登録のため終了"
+          fi
+      - if: steps.gate.outputs.skip != '1'
+        run: bash pipeline/setup.sh
+      - name: 品質チェック → 素材取得 → 書き出し → 納品
+        if: steps.gate.outputs.skip != '1'
+        run: |
+          list="${{ steps.eps.outputs.list }}"
+          if [ "${{ steps.eps.outputs.mode }}" = "changed" ]; then
+            list=$(python pipeline/drive.py changed | tr '\n' ' ')
+            echo "素材が更新された回: ${list:-なし}"
+          fi
+          for ep in $list; do
             [ -f "content/$ep/plan.json" ] || continue
             python pipeline/qa.py "content/$ep"
-            if [ -n "$GDRIVE_REFRESH_TOKEN" ]; then python pipeline/drive.py pull "$ep"; fi
+            python pipeline/order_sheet.py "content/$ep"
+            if [ -n "$GDRIVE_REFRESH_TOKEN" ]; then
+              python pipeline/drive.py order "$ep"
+              python pipeline/drive.py pull "$ep"
+            fi
             python pipeline/generate.py "content/$ep"
             python pipeline/render.py "content/$ep/plan.json"
             if [ -n "$GDRIVE_REFRESH_TOKEN" ]; then python pipeline/drive.py push "$ep"; fi
           done
       - uses: actions/upload-artifact@v4
+        if: steps.gate.outputs.skip != '1'
         with:
           name: videos
           path: output/
           retention-days: 14
+          if-no-files-found: ignore

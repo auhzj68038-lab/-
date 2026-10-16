@@ -15,7 +15,7 @@ plan.json の各シーンで、素材（footage/<エピソード>/<source>）が
   PEXELS_API_KEY   Pexels の APIキー（フリー素材用・任意）
   GEMINI_IMAGE_MODEL  既定 gemini-2.5-flash-image
   FAL_VIDEO_ENDPOINT  既定 bytedance/seedance-2.0/fast/image-to-video
-  MAX_MOTION_SECONDS  1本あたりの動画生成秒数の上限（既定 10 = 約$2.4）
+  MAX_MOTION_SECONDS  1本あたりの動画生成秒数の上限（既定 0 = 動画生成しない＝課金ゼロ）
 
     python pipeline/generate.py content/2026-09-27_ep001_mini_ramen
 """
@@ -109,7 +109,7 @@ def main(ep_dir: Path) -> int:
     out.mkdir(parents=True, exist_ok=True)
     style = plan.get("style") or BASE_STYLE
     ref = ROOT / plan["style_ref"] if plan.get("style_ref") else None
-    budget = float(os.environ.get("MAX_MOTION_SECONDS", "10"))
+    budget = float(os.environ.get("MAX_MOTION_SECONDS", "0"))
     credits = []
     for i, sc in enumerate(plan["scenes"], 1):
         src = sc.get("source")

@@ -136,9 +136,20 @@ def resolve_source(src, base: Path):
             return p
     # AI生成で拡張子が変わった素材（01_hook.mp4 の代わりに 01_hook.png 等）も拾う
     stem = ROOT / "footage" / base.name / Path(src).stem
-    for ext in (".mp4", ".mov", ".png", ".jpg", ".jpeg", ".webp"):
+    exts = (".mp4", ".mov", ".png", ".jpg", ".jpeg", ".webp")
+    for ext in exts:
         if stem.with_suffix(ext).exists():
             return stem.with_suffix(ext)
+    # 番号だけの名前でもOK（01_bowl.png → 「01.jpg」「1.png」「01 (1).jpg」も可）。動画を優先
+    num = re.match(r"\d+", Path(src).stem)
+    folder = stem.parent
+    if num and folder.is_dir():
+        n = int(num.group())
+        hits = [p for p in folder.iterdir() if p.suffix.lower() in exts
+                and (m := re.match(r"\d+", p.stem)) and int(m.group()) == n]
+        hits.sort(key=lambda p: (exts.index(p.suffix.lower()) > 1, p.name))
+        if hits:
+            return hits[0]
     return None
 
 
@@ -153,15 +164,24 @@ class Source:
         self.start = float(scene.get("start", 0))
         self.clip = None
         self.still = None
+        self.crop = scene.get("crop")
         src = scene.get("source")
         path = resolve_source(src, base)
         if path and path.suffix.lower() in (".mp4", ".mov", ".m4v", ".webm", ".avi"):
             from moviepy import VideoFileClip
             self.clip = VideoFileClip(str(path), audio=False)
         elif path and path.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp"):
-            self.still = self._cover(Image.open(path).convert("RGB"), 1.25)
+            self.still = self._cover(self._crop(Image.open(path).convert("RGB")), 1.25)
         else:
             self.still = self._placeholder(scene.get("placeholder", {}), scene.get("source"))
+
+    def _crop(self, img: Image.Image) -> Image.Image:
+        """"crop": [x, y, w, h]（0〜1の割合）で素材の一部だけ使う。1枚の画像から寄り・引きの複数カットを作れる"""
+        if not self.crop:
+            return img
+        x, y, w, h = self.crop
+        return img.crop((int(img.width * x), int(img.height * y),
+                         int(img.width * (x + w)), int(img.height * (y + h))))
 
     def _cover(self, img: Image.Image, extra: float = 1.0) -> Image.Image:
         """9:16 に中央クロップ（ズーム用に extra 倍の余白を持つ）"""
@@ -206,7 +226,7 @@ class Source:
         p = t / max(self.duration, 1e-6)  # 0→1 進行度
         if self.clip is not None:
             ct = min(self.start + t * self.speed, self.clip.duration - 0.05)
-            img = self._cover(Image.fromarray(self.clip.get_frame(ct)), 1.12)
+            img = self._cover(self._crop(Image.fromarray(self.clip.get_frame(ct))), 1.12)
         else:
             img = self.still
         zoom = {"zoom_in": 1.0 + 0.10 * p, "zoom_out": 1.10 - 0.10 * p,

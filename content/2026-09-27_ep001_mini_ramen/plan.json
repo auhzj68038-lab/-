@@ -10,7 +10,7 @@
   "cover_time": 0.4,
   "scenes": [
     {
-      "source": "01_hook.mp4",
+      "source": "01_bowl.png",
       "duration": 1.6,
       "effect": "punch",
       "sfx": "boom",
@@ -27,13 +27,12 @@
         }
       ],
       "gen": {
-        "image": "Extreme macro close-up of a human fingertip holding a tiny steaming bowl of Japanese shoyu ramen the size of a one-yen coin, with chashu, nori and green onions, surprised playful mood",
-        "motion": "Steam gently rises from the tiny ramen bowl, camera quickly pushes in toward the bowl",
-        "seconds": 4
+        "image": "Extreme macro close-up of a human fingertip holding a tiny steaming bowl of Japanese shoyu ramen the size of a one-yen coin, with chashu, nori, menma and green onions, glossy soup, surprised playful mood",
+        "motion": "Steam gently rises from the tiny ramen bowl, camera slowly pushes in"
       }
     },
     {
-      "source": "02_coin.mp4",
+      "source": "02_coin.png",
       "duration": 2.0,
       "effect": "zoom_in",
       "sfx": "pop",
@@ -56,17 +55,17 @@
         }
       ],
       "gen": {
-        "image": "A tiny ramen bowl placed right next to a Japanese one-yen aluminium coin on a wooden table, both exactly the same size, top-down 45 degree angle"
+        "image": "A tiny ramen bowl placed right next to a Japanese one-yen aluminium coin on a wooden table, both exactly the same size, 45 degree angle"
       }
     },
     {
-      "source": "03_shop.mp4",
+      "source": "03_shop.png",
       "duration": 2.4,
       "effect": "pan_right",
       "sfx": "whoosh",
       "transition": "flash",
       "placeholder": {
-        "label": "店全体を横に舐めるように撮影",
+        "label": "03_shop の店先部分（自動で切り抜き）",
         "color": "#1B998B",
         "color2": "#C5F277"
       },
@@ -78,45 +77,52 @@
         }
       ],
       "gen": {
-        "image": "A miniature Japanese ramen shop storefront diorama with a red noren curtain, paper lanterns, wooden sliding door and a tiny menu board with no readable text, evening lighting"
-      }
+        "image": "Wide shot of a complete miniature Japanese ramen shop diorama on a wooden desk: red noren curtain and paper lanterns on the storefront at the top, inside a tiny cute figurine customer sits at the wooden counter in front of a steaming ramen bowl at the bottom, a real human hand resting beside it for scale, cozy warm evening light"
+      },
+      "crop": [
+        0.1,
+        0.0,
+        0.8,
+        0.55
+      ]
     },
     {
-      "source": "04_noodle.mp4",
+      "source": "01_bowl.png",
       "duration": 2.6,
       "effect": "zoom_in",
       "sfx": "pop",
       "placeholder": {
-        "label": "ピンセットで麺を持ち上げる",
+        "label": "01_bowl の寄り（自動で切り抜き）",
         "color": "#E4572E",
         "color2": "#F3A712"
       },
       "telop": [
         {
-          "text": "麺、1本ずつ\n持ち上げ中",
+          "text": "スープまで\nキラキラ!!",
           "style": "normal",
           "position": "top"
         },
         {
-          "text": "指プルプル…",
+          "text": "湯気まで出てる…!?",
           "style": "info",
           "position": "bottom",
           "at": 1.2
         }
       ],
-      "gen": {
-        "image": "Tweezers lifting a single strand of tiny ramen noodles from a miniature bowl, extreme macro, dramatic side light",
-        "motion": "Tweezers slowly lift the tiny noodles, noodles wobble slightly, subtle hand tremble",
-        "seconds": 4
-      }
+      "crop": [
+        0.2,
+        0.25,
+        0.6,
+        0.6
+      ]
     },
     {
-      "source": "05_counter.mp4",
+      "source": "03_shop.png",
       "duration": 2.2,
       "effect": "shake",
       "sfx": "ding",
       "placeholder": {
-        "label": "カウンターに小人フィギュアを座らせる",
+        "label": "03_shop のカウンター部分（自動で切り抜き）",
         "color": "#3D348B",
         "color2": "#F18701"
       },
@@ -127,17 +133,20 @@
           "position": "center"
         }
       ],
-      "gen": {
-        "image": "Inside the miniature ramen shop, a tiny cute figurine customer sitting at the wooden counter in front of a steaming ramen bowl, cozy warm light"
-      }
+      "crop": [
+        0.15,
+        0.4,
+        0.7,
+        0.6
+      ]
     },
     {
-      "source": "06_q.mp4",
+      "source": "03_shop.png",
       "duration": 2.4,
       "effect": "zoom_out",
       "sfx": "pop",
       "placeholder": {
-        "label": "店を引きで全体ショット",
+        "label": "03_shop の全体",
         "color": "#0B3954",
         "color2": "#BFD7EA"
       },
@@ -153,10 +162,7 @@
           "position": "bottom",
           "at": 0.8
         }
-      ],
-      "gen": {
-        "image": "Wide shot of the complete miniature ramen shop diorama on a desk, a real human hand resting beside it for scale, cozy and impressive"
-      }
+      ]
     }
   ],
   "ai_generated": true
