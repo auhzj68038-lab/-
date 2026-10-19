@@ -23,7 +23,7 @@
         {
           "text": "え、これ\nラーメン屋!?",
           "style": "hook",
-          "position": "center"
+          "position": "bottom"
         }
       ],
       "gen": {
@@ -100,19 +100,19 @@
         {
           "text": "スープまで\nキラキラ!!",
           "style": "normal",
-          "position": "top"
+          "position": "bottom"
         },
         {
           "text": "湯気まで出てる…!?",
           "style": "info",
-          "position": "bottom",
+          "position": "top",
           "at": 1.2
         }
       ],
       "crop": [
+        0.15,
         0.2,
-        0.25,
-        0.6,
+        0.7,
         0.6
       ]
     },

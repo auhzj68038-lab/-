@@ -141,9 +141,11 @@ def resolve_source(src, base: Path):
         if stem.with_suffix(ext).exists():
             return stem.with_suffix(ext)
     # 番号だけの名前でもOK（01_bowl.png → 「01.jpg」「1.png」「01 (1).jpg」も可）。動画を優先
+    # 探す場所: footage/<ep>/（ドライブから取得）→ content/<ep>/footage/（チャットで受け取りリポジトリに保存）
     num = re.match(r"\d+", Path(src).stem)
-    folder = stem.parent
-    if num and folder.is_dir():
+    for folder in (stem.parent, base / "footage"):
+        if not (num and folder.is_dir()):
+            continue
         n = int(num.group())
         hits = [p for p in folder.iterdir() if p.suffix.lower() in exts
                 and (m := re.match(r"\d+", p.stem)) and int(m.group()) == n]
@@ -213,7 +215,7 @@ class Source:
         if label:  # 撮影指示を画面下部の安全領域に表示
             font = ImageFont.truetype(find_font(), int(self.W * 0.04))
             d = ImageDraw.Draw(img)
-            text = "撮影: " + label
+            text = "素材待ち: " + label
             tw = font.getbbox(text)[2]
             x, y = (W - tw) / 2, H / 2 + self.H * 0.30
             pad = self.W * 0.02

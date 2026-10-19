@@ -16,4 +16,9 @@ description: 毎週の「今週分つくって」。今週分のミニチュア�
 7. 社長へ短く報告：
    - 今週の企画タイトル一覧（投稿予定日つき）
    - 「ドライブ『素材』の各フォルダにある素材オーダー表どおり、Geminiアプリで画像を作って番号の名前で入れてください（計N枚・約N分）」
-   - ドライブの鍵が未設定（GitHub Secrets に GDRIVE_REFRESH_TOKEN が無い）なら、オーダー表のコピペ文をこのチャットに直接書く
+   - ドライブの鍵が未設定（GitHub Secrets に GDRIVE_REFRESH_TOKEN が無い）なら、オーダー表のコピペ文をこのチャットに直接書き、「できた画像はこのチャットに送ってください」と伝える
+
+## 社長がチャットに画像を送ってきたら（チャット納品モード）
+1. どのエピソードの何番か判断（不明なら直近で素材待ちの回の若い番号から）し、`content/<ep>/footage/<番号>.jpg` にコピー
+2. `python pipeline/render.py content/<ep>/plan.json` → シートを目視確認し、テロップ被り・切り抜きを plan.json で調整
+3. 画像と plan.json をコミットして push、完成動画（output/<ep>/<name>.mp4）を SendUserFile で社長に送る
