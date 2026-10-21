@@ -167,6 +167,8 @@ class Source:
         self.clip = None
         self.still = None
         self.crop = scene.get("crop")
+        self.handheld = False
+        self.seed = len(str(scene.get("source", ""))) * 0.7
         src = scene.get("source")
         path = resolve_source(src, base)
         if path and path.suffix.lower() in (".mp4", ".mov", ".m4v", ".webm", ".avi"):
@@ -242,6 +244,9 @@ class Source:
             cx = big_w / 2 - (big_w - vw) / 2 * (1 - 2 * p) * 0.9
         elif self.effect == "pan_up":
             cy = big_h / 2 + (big_h - vh) / 2 * (1 - 2 * p) * 0.9
+        if self.handheld:  # 手持ち撮影っぽいゆっくりした揺れ（AIっぽい“完璧な静止画感”を消す）
+            cx += big_w * 0.006 * (math.sin(t * 1.3 + self.seed) + 0.5 * math.sin(t * 3.1 + self.seed * 2))
+            cy += big_h * 0.004 * (math.cos(t * 1.1 + self.seed) + 0.5 * math.sin(t * 2.7 + self.seed))
         if self.effect == "shake":
             cx += math.sin(t * 55) * big_w * 0.012
             cy += math.cos(t * 47) * big_h * 0.012
@@ -322,6 +327,17 @@ def compose(plan_path: Path, preview: bool = False) -> Path:
     font = find_font()
     scenes = plan["scenes"]
     sources = [Source(sc, W, H, base) for sc in scenes]
+    # 実写っぽい仕上げ: "look": {"handheld": true, "grain": 0.05, "vignette": 0.3}
+    look = plan.get("look", {})
+    for src in sources:
+        src.handheld = bool(look.get("handheld"))
+    grain = float(look.get("grain", 0))
+    vig = float(look.get("vignette", 0))
+    if vig:
+        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+        r = np.sqrt(((xx - W / 2) / (W / 2)) ** 2 + ((yy - H / 2) / (H / 2)) ** 2) / math.sqrt(2)
+        vig_mask = (1 - vig * np.clip(r, 0, 1) ** 2)[..., None]
+    rng = np.random.default_rng(7)
     telops = []
     for sc in scenes:
         items = sc.get("telop") or []
@@ -335,7 +351,15 @@ def compose(plan_path: Path, preview: bool = False) -> Path:
     def frame_at(t: float) -> np.ndarray:
         i = min(int(np.searchsorted(starts, t, side="right") - 1), len(scenes) - 1)
         lt = t - starts[i]
-        img = Image.fromarray(sources[i].frame(lt)).convert("RGBA")
+        bg = sources[i].frame(lt)
+        if vig or grain:  # 背景だけに実写っぽい仕上げ（テロップには掛けない）
+            bg = bg.astype(np.float32)
+            if vig:
+                bg *= vig_mask
+            if grain:
+                bg += rng.normal(0, 255 * grain, (H // 2, W // 2, 1)).repeat(2, 0).repeat(2, 1)[:H, :W]
+            bg = np.clip(bg, 0, 255).astype(np.uint8)
+        img = Image.fromarray(bg).convert("RGBA")
         for tel, pos, at in telops[i]:
             if lt < at:
                 continue

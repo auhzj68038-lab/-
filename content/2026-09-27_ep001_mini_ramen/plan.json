@@ -165,5 +165,10 @@
       ]
     }
   ],
-  "ai_generated": true
+  "ai_generated": true,
+  "look": {
+    "handheld": true,
+    "grain": 0.025,
+    "vignette": 0.3
+  }
 }
