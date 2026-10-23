@@ -1,0 +1,174 @@
+{
+  "title": "10円玉サイズの自動販売機、ちゃんと光る！",
+  "output_name": "ep005_mini_vending",
+  "size": [
+    1080,
+    1920
+  ],
+  "fps": 30,
+  "bgm": null,
+  "cover_time": 0.4,
+  "ai_generated": true,
+  "look": {
+    "handheld": true,
+    "grain": 0.025,
+    "vignette": 0.3
+  },
+  "scenes": [
+    {
+      "source": "01_finger.png",
+      "duration": 1.5,
+      "effect": "punch",
+      "sfx": "boom",
+      "placeholder": {
+        "label": "指先に光る自販機",
+        "color": "#118AB2",
+        "color2": "#073B4C"
+      },
+      "telop": [
+        {
+          "text": "指先に\n自販機!?",
+          "style": "hook",
+          "position": "bottom"
+        }
+      ],
+      "gen": {
+        "image": "Extreme macro close-up of a human fingertip next to a tiny glowing drink vending machine about 2cm tall, rows of tiny colorful cans behind the glass, buttons lit, no logos, no text, night mood"
+      }
+    },
+    {
+      "source": "02_ten.png",
+      "duration": 2.0,
+      "effect": "zoom_in",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "本物の10円玉＋自販機",
+        "color": "#EF476F",
+        "color2": "#FFD166"
+      },
+      "telop": [
+        {
+          "text": "大きさは…",
+          "style": "normal",
+          "position": "top"
+        },
+        {
+          "text": "10円玉くらい!!",
+          "style": "punch",
+          "position": "bottom",
+          "at": 0.7
+        }
+      ],
+      "gen": {
+        "photo": "本物の10円玉を机に置いて、斜め上から撮る",
+        "image": "10円玉の横に、高さが10円玉の直径と同じくらい（約2.3cm）の小さな光る自動販売機を置いて。ロゴや文字は入れないで。"
+      }
+    },
+    {
+      "source": "03_street.png",
+      "duration": 2.4,
+      "effect": "zoom_in",
+      "sfx": "ding",
+      "placeholder": {
+        "label": "03 の自販機（自動切り抜き）",
+        "color": "#073B4C",
+        "color2": "#118AB2"
+      },
+      "telop": [
+        {
+          "text": "ちゃんと光る!!",
+          "style": "normal",
+          "position": "top"
+        }
+      ],
+      "gen": {
+        "image": "Miniature Japanese street corner diorama at night on a desk: at the top a glowing drink vending machine full of rows of tiny colorful cans with no logos and no text, at the bottom a tiny figurine about 3cm tall happily holding a tiny can in front of the machine, a real human hand resting beside it for scale, cinematic night light"
+      },
+      "crop": [
+        0.1,
+        0.0,
+        0.8,
+        0.55
+      ],
+      "transition": "flash"
+    },
+    {
+      "source": "03_street.png",
+      "duration": 2.6,
+      "effect": "pan_up",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "03 の上部の寄り（自動切り抜き）",
+        "color": "#06D6A0",
+        "color2": "#118AB2"
+      },
+      "telop": [
+        {
+          "text": "ジュースも\n1本ずつ並んでる",
+          "style": "normal",
+          "position": "top"
+        },
+        {
+          "text": "缶の大きさ約2mm",
+          "style": "info",
+          "position": "bottom",
+          "at": 1.0
+        }
+      ],
+      "crop": [
+        0.2,
+        0.05,
+        0.6,
+        0.45
+      ]
+    },
+    {
+      "source": "03_street.png",
+      "duration": 2.2,
+      "effect": "shake",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "03 の下半分（自動切り抜き）",
+        "color": "#EF476F",
+        "color2": "#F78C6B"
+      },
+      "telop": [
+        {
+          "text": "小人さん\nお買い上げ!!",
+          "style": "punch",
+          "position": "center"
+        }
+      ],
+      "crop": [
+        0.15,
+        0.4,
+        0.7,
+        0.6
+      ]
+    },
+    {
+      "source": "03_street.png",
+      "duration": 2.4,
+      "effect": "zoom_out",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "03 の全体",
+        "color": "#03045E",
+        "color2": "#00B4D8"
+      },
+      "telop": [
+        {
+          "text": "あなたは何買う？",
+          "style": "question",
+          "position": "top"
+        },
+        {
+          "text": "コメントで教えてね",
+          "style": "cta",
+          "position": "bottom",
+          "at": 0.8
+        }
+      ]
+    }
+  ]
+}

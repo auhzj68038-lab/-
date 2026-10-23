@@ -1,0 +1,169 @@
+{
+  "title": "身長3cmの住人たちのハロウィンパーティー！",
+  "output_name": "ep004_mini_halloween",
+  "size": [
+    1080,
+    1920
+  ],
+  "fps": 30,
+  "bgm": null,
+  "cover_time": 0.4,
+  "ai_generated": true,
+  "look": {
+    "handheld": true,
+    "grain": 0.025,
+    "vignette": 0.3
+  },
+  "scenes": [
+    {
+      "source": "03_ghost.png",
+      "duration": 1.5,
+      "effect": "punch",
+      "sfx": "boom",
+      "placeholder": {
+        "label": "指の横に3cmのおばけ",
+        "color": "#5E548E",
+        "color2": "#9F86C0"
+      },
+      "telop": [
+        {
+          "text": "ちっちゃい\nおばけ!?",
+          "style": "hook",
+          "position": "bottom"
+        }
+      ],
+      "gen": {
+        "image": "Extreme macro close-up of a tiny figurine about 3cm tall in a cute white ghost costume holding a tiny candy basket, standing next to a human fingertip, pastel Halloween lights bokeh in the background",
+        "motion": "The tiny ghost figurine sways slightly, lights twinkle in the background"
+      }
+    },
+    {
+      "source": "01_party.png",
+      "duration": 2.2,
+      "effect": "pan_right",
+      "sfx": "whoosh",
+      "placeholder": {
+        "label": "01 の上半分（自動切り抜き）",
+        "color": "#231942",
+        "color2": "#E0B1CB"
+      },
+      "telop": [
+        {
+          "text": "今夜は3cmの\nハロウィン!!",
+          "style": "normal",
+          "position": "top"
+        }
+      ],
+      "gen": {
+        "image": "Wide shot of a miniature town square diorama at night on a desk, a cute pastel Halloween party: glowing pastel lanterns and a tiny haunted house with smiling jack-o-lanterns at the top, tiny figurines about 3cm tall in ghost, witch and pumpkin costumes dancing at the bottom, a real human hand resting beside it for scale, magical warm glow"
+      },
+      "crop": [
+        0.1,
+        0.0,
+        0.8,
+        0.55
+      ],
+      "transition": "flash"
+    },
+    {
+      "source": "01_party.png",
+      "duration": 2.4,
+      "effect": "zoom_in",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "01 の下半分（自動切り抜き）",
+        "color": "#5E548E",
+        "color2": "#BE95C4"
+      },
+      "telop": [
+        {
+          "text": "みんな仮装して\n大はしゃぎ",
+          "style": "normal",
+          "position": "top"
+        }
+      ],
+      "crop": [
+        0.15,
+        0.4,
+        0.7,
+        0.6
+      ]
+    },
+    {
+      "source": "02_mikan.png",
+      "duration": 2.6,
+      "effect": "zoom_in",
+      "sfx": "boom",
+      "placeholder": {
+        "label": "本物のみかん＋小人たち",
+        "color": "#F77F00",
+        "color2": "#FCBF49"
+      },
+      "telop": [
+        {
+          "text": "あれ…\nこのかぼちゃ…",
+          "style": "normal",
+          "position": "top"
+        },
+        {
+          "text": "みかんだ!!",
+          "style": "punch",
+          "position": "bottom",
+          "at": 1.0
+        }
+      ],
+      "gen": {
+        "photo": "本物のみかんを1個、机に置いて横から撮る",
+        "image": "みかんの前に、身長3cmくらいの小さな仮装した人形たち（おばけ・魔女・かぼちゃ）を置いて、みんなでみかんを巨大なかぼちゃのように見上げている場面にして。"
+      }
+    },
+    {
+      "source": "03_ghost.png",
+      "duration": 2.2,
+      "effect": "shake",
+      "sfx": "ding",
+      "placeholder": {
+        "label": "03 の寄り（自動切り抜き）",
+        "color": "#7B2CBF",
+        "color2": "#E0AAFF"
+      },
+      "telop": [
+        {
+          "text": "お菓子くれないと\nイタズラ…!?",
+          "style": "punch",
+          "position": "center"
+        }
+      ],
+      "crop": [
+        0.15,
+        0.2,
+        0.7,
+        0.6
+      ]
+    },
+    {
+      "source": "01_party.png",
+      "duration": 2.4,
+      "effect": "zoom_out",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "01 の全体",
+        "color": "#10002B",
+        "color2": "#C77DFF"
+      },
+      "telop": [
+        {
+          "text": "あなたは何の仮装？",
+          "style": "question",
+          "position": "top"
+        },
+        {
+          "text": "コメントで教えてね",
+          "style": "cta",
+          "position": "bottom",
+          "at": 0.8
+        }
+      ]
+    }
+  ]
+}

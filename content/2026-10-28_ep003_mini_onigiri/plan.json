@@ -1,0 +1,174 @@
+{
+  "title": "お米1粒サイズのおにぎり屋さん！",
+  "output_name": "ep003_mini_onigiri",
+  "size": [
+    1080,
+    1920
+  ],
+  "fps": 30,
+  "bgm": null,
+  "cover_time": 0.4,
+  "ai_generated": true,
+  "look": {
+    "handheld": true,
+    "grain": 0.025,
+    "vignette": 0.3
+  },
+  "scenes": [
+    {
+      "source": "01_onigiri.png",
+      "duration": 1.5,
+      "effect": "punch",
+      "sfx": "boom",
+      "placeholder": {
+        "label": "指先におにぎり3つ",
+        "color": "#2A9D8F",
+        "color2": "#E9F5DB"
+      },
+      "telop": [
+        {
+          "text": "指の上に\nおにぎり屋!?",
+          "style": "hook",
+          "position": "bottom"
+        }
+      ],
+      "gen": {
+        "image": "Extreme macro close-up of a human fingertip holding a tiny wooden plate with three tiny Japanese onigiri rice balls wrapped in nori, each smaller than a fingernail, individual rice grains visible, cozy homely mood"
+      }
+    },
+    {
+      "source": "02_rice.png",
+      "duration": 2.4,
+      "effect": "zoom_in",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "本物のお米＋おにぎり",
+        "color": "#264653",
+        "color2": "#8AB17D"
+      },
+      "telop": [
+        {
+          "text": "大きさ比べ\nしてみると…",
+          "style": "normal",
+          "position": "top"
+        },
+        {
+          "text": "お米1粒と同じ!!",
+          "style": "punch",
+          "position": "bottom",
+          "at": 0.8
+        }
+      ],
+      "gen": {
+        "photo": "黒っぽいお皿に生のお米を数粒のせて、真上から撮る",
+        "image": "お米の横に、お米1粒と同じくらいの大きさ（約5mm）の小さなおにぎり（海苔付き）を3つ並べて。"
+      }
+    },
+    {
+      "source": "03_shop.png",
+      "duration": 2.0,
+      "effect": "pan_up",
+      "sfx": "whoosh",
+      "placeholder": {
+        "label": "03 の店先（自動切り抜き）",
+        "color": "#E9C46A",
+        "color2": "#F4A261"
+      },
+      "telop": [
+        {
+          "text": "のれんの奥に…",
+          "style": "normal",
+          "position": "top"
+        }
+      ],
+      "gen": {
+        "image": "Wide shot of a complete miniature Japanese onigiri shop diorama on a wooden desk: white noren curtain and a wooden sign with no readable text on the storefront at the top, inside a tiny smiling elderly shopkeeper figurine stands behind a counter lined with tiny onigiri at the bottom, a real human hand resting beside it for scale, warm morning light"
+      },
+      "crop": [
+        0.1,
+        0.0,
+        0.8,
+        0.55
+      ],
+      "transition": "flash"
+    },
+    {
+      "source": "03_shop.png",
+      "duration": 2.2,
+      "effect": "zoom_in",
+      "sfx": "ding",
+      "placeholder": {
+        "label": "03 のカウンター（自動切り抜き）",
+        "color": "#E76F51",
+        "color2": "#F4A261"
+      },
+      "telop": [
+        {
+          "text": "看板娘\n推定80歳!!",
+          "style": "punch",
+          "position": "center"
+        }
+      ],
+      "crop": [
+        0.15,
+        0.4,
+        0.7,
+        0.6
+      ]
+    },
+    {
+      "source": "01_onigiri.png",
+      "duration": 2.4,
+      "effect": "shake",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "01 の寄り（自動切り抜き）",
+        "color": "#2A9D8F",
+        "color2": "#B5E48C"
+      },
+      "telop": [
+        {
+          "text": "具は何かな…!?",
+          "style": "normal",
+          "position": "top"
+        },
+        {
+          "text": "海苔パリッパリ",
+          "style": "info",
+          "position": "bottom",
+          "at": 1.0
+        }
+      ],
+      "crop": [
+        0.15,
+        0.2,
+        0.7,
+        0.6
+      ]
+    },
+    {
+      "source": "03_shop.png",
+      "duration": 2.4,
+      "effect": "zoom_out",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "03 の全体",
+        "color": "#1D3557",
+        "color2": "#A8DADC"
+      },
+      "telop": [
+        {
+          "text": "好きな具は？",
+          "style": "question",
+          "position": "top"
+        },
+        {
+          "text": "コメントで教えてね",
+          "style": "cta",
+          "position": "bottom",
+          "at": 0.8
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "title": "1円玉サイズのケーキ屋、ハロウィン限定オープン！",
+  "output_name": "ep002_mini_cake",
+  "size": [
+    1080,
+    1920
+  ],
+  "fps": 30,
+  "bgm": null,
+  "cover_time": 0.4,
+  "ai_generated": true,
+  "look": {
+    "handheld": true,
+    "grain": 0.025,
+    "vignette": 0.3
+  },
+  "scenes": [
+    {
+      "source": "01_tart.png",
+      "duration": 1.6,
+      "effect": "punch",
+      "sfx": "boom",
+      "placeholder": {
+        "label": "指先にかぼちゃタルト",
+        "color": "#FF8C42",
+        "color2": "#FFD6A5"
+      },
+      "telop": [
+        {
+          "text": "え、ケーキ屋\nまで開店!?",
+          "style": "hook",
+          "position": "bottom"
+        }
+      ],
+      "gen": {
+        "image": "Extreme macro close-up of a human fingertip holding a tiny pumpkin tart the size of a one-yen coin, decorated with a smiling jack-o-lantern chocolate plate, whipped cream and orange glaze, cute pastel Halloween mood",
+        "motion": "Camera slowly pushes in, a tiny drop of glaze shines"
+      }
+    },
+    {
+      "source": "02_coin.png",
+      "duration": 2.0,
+      "effect": "zoom_in",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "本物の1円玉＋タルト",
+        "color": "#6C63FF",
+        "color2": "#C3B1E1"
+      },
+      "telop": [
+        {
+          "text": "サイズ感は…",
+          "style": "normal",
+          "position": "top"
+        },
+        {
+          "text": "またも1円玉!!",
+          "style": "punch",
+          "position": "bottom",
+          "at": 0.7
+        }
+      ],
+      "gen": {
+        "photo": "本物の1円玉を木の机に置いて、斜め上から撮る",
+        "image": "1円玉の横に、1円玉と同じ直径2cmくらいの小さなかぼちゃタルト（笑顔のかぼちゃのチョコ飾り付き）を置いて。"
+      }
+    },
+    {
+      "source": "03_shop.png",
+      "duration": 2.4,
+      "effect": "pan_right",
+      "sfx": "whoosh",
+      "placeholder": {
+        "label": "03 の店先（自動切り抜き）",
+        "color": "#F28482",
+        "color2": "#F6BD60"
+      },
+      "telop": [
+        {
+          "text": "ハロウィン\n限定ショップ!!",
+          "style": "normal",
+          "position": "top"
+        }
+      ],
+      "gen": {
+        "image": "Wide shot of a complete miniature cake shop diorama on a wooden desk decorated for a cute pastel Halloween: pastel orange striped awning and smiling pumpkin decorations on the storefront at the top, a glass showcase full of tiny cakes and pumpkin tarts at the bottom, a real human hand resting beside it for scale, soft warm light"
+      },
+      "crop": [
+        0.1,
+        0.0,
+        0.8,
+        0.55
+      ],
+      "transition": "flash"
+    },
+    {
+      "source": "03_shop.png",
+      "duration": 2.6,
+      "effect": "zoom_in",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "03 のショーケース（自動切り抜き）",
+        "color": "#84A59D",
+        "color2": "#F5CAC3"
+      },
+      "telop": [
+        {
+          "text": "ショーケースに\nずらり…",
+          "style": "normal",
+          "position": "top"
+        },
+        {
+          "text": "全部食べたい…",
+          "style": "info",
+          "position": "bottom",
+          "at": 1.0
+        }
+      ],
+      "crop": [
+        0.15,
+        0.4,
+        0.7,
+        0.6
+      ]
+    },
+    {
+      "source": "01_tart.png",
+      "duration": 2.2,
+      "effect": "shake",
+      "sfx": "ding",
+      "placeholder": {
+        "label": "01 の寄り（自動切り抜き）",
+        "color": "#FF8C42",
+        "color2": "#FFE5B4"
+      },
+      "telop": [
+        {
+          "text": "かぼちゃが\n笑ってる!!",
+          "style": "punch",
+          "position": "center"
+        }
+      ],
+      "crop": [
+        0.15,
+        0.2,
+        0.7,
+        0.6
+      ]
+    },
+    {
+      "source": "03_shop.png",
+      "duration": 2.4,
+      "effect": "zoom_out",
+      "sfx": "pop",
+      "placeholder": {
+        "label": "03 の全体",
+        "color": "#3D348B",
+        "color2": "#F7B801"
+      },
+      "telop": [
+        {
+          "text": "どれ食べたい？",
+          "style": "question",
+          "position": "top"
+        },
+        {
+          "text": "コメントで教えてね",
+          "style": "cta",
+          "position": "bottom",
+          "at": 0.8
+        }
+      ]
+    }
+  ]
+}

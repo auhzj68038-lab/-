@@ -25,16 +25,19 @@ def build(ep_dir: Path) -> Path:
         if not src or not gen or Path(src).stem in seen:
             continue
         seen.add(Path(src).stem)
-        orders.append((Path(src).stem, gen, sc.get("placeholder", {}).get("label", "")))
+        label = sc.get("placeholder", {}).get("label", "")
+        if "切り抜き" in label:
+            label = "全体の画像（あとで自動で切り抜いて複数カットに使います）"
+        orders.append((Path(src).stem, gen, label))
+    orders.sort(key=lambda o: o[0])
 
     lines = [
         f"【素材オーダー表】{plan.get('title', ep_dir.name)}",
         "",
         "■ やること（1枚1分 × %d枚）" % len(orders),
         "1. Geminiアプリ（無料）を開く → 下の「コピペ文」を1つずつ貼って送信",
-        "2. できた画像を長押し → 保存 → このフォルダにアップロード",
-        "3. ファイル名を番号だけに変える（例: 01_bowl.png なら「01」）※png / jpg どちらでもOK",
-        "4. 全部入れたら放置でOK。2時間以内に自動で動画になり「完成動画」に届きます",
+        "2. できた画像を Claude のチャットに「%s の 01」のように番号を添えて送る → その場で動画にして返します" % ep_dir.name.split("_")[1],
+        "   （ドライブ連携を設定済みなら、ドライブのこのフォルダに番号の名前で入れるだけでもOK）",
         "",
         "※ 気に入らない画像は、同じ会話で「もっと明るく」「もっと寄りで」と言えば作り直せます",
         "※ 人物の顔・実在のキャラクター・ブランドのロゴが入った画像は使わない",
@@ -45,10 +48,20 @@ def build(ep_dir: Path) -> Path:
             "=" * 40,
             f"#{i}  ファイル名: {stem.split('_')[0]}    （{label}）",
             "-" * 40,
-            "コピペ文:",
-            f"縦長（9:16）の画像を生成して。文字は入れないで。{gen['image']}. {style}",
-            "",
         ]
+        if gen.get("photo"):  # 本物を撮る＋Geminiで足す（AI感を消す・サイズ比較の説得力）
+            lines += [
+                f"① スマホで撮る：{gen['photo']}（縦向き・明るい窓際で）",
+                "② Geminiアプリにその写真を添付して、次の文を送信:",
+                f"この写真はそのまま使って、{gen['image']} 光と影の向きを写真に合わせて、写真に写っている本物の物は変えないで。文字は入れないで。",
+                "",
+            ]
+        else:
+            lines += [
+                "コピペ文:",
+                f"縦長（9:16）の画像を生成して。文字は入れないで。{gen['image']}. {style}",
+                "",
+            ]
         if gen.get("motion"):
             lines += [
                 "（任意・余裕がある日だけ）動画にする場合：Dreamina（無料枠）の「画像から動画」に",
