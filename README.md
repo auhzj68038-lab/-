@@ -16,10 +16,10 @@ TikTok [@sho1249003](https://www.tiktok.com/@sho1249003)
 3. 日曜：完成動画を確認 → TikTok Studio で予約投稿（15分）
 4. 日曜：数値のスクショを Claude に送る（3分）
 
-最初の1回だけ [docs/05_setup.md](docs/05_setup.md) の初期設定（約25分・カード登録なし）が必要です。
+最初の1回だけ [docs/05_setup.md](docs/05_setup.md) の初期設定（約25分・カード登録なし）が必要です。詳細は [docs/02_workflow.md](docs/02_workflow.md)。
 
 ### 全自動モード（任意・月3,000円前後）
-毎日19:00に「企画→画像→ナレーション→動画→ドライブ→YouTube Shorts / TikTok 投稿→Discord通知」まで無人で回します。設定は [docs/05_setup.md](docs/05_setup.md) 後半の「全自動モード」。詳細は [docs/02_workflow.md](docs/02_workflow.md)。
+毎日19:00に「企画→画像→ナレーション→動画→ドライブ→YouTube Shorts / TikTok 投稿→Discord通知」まで無人で回します。設定は [docs/05_setup.md](docs/05_setup.md) 後半の「全自動モード」。
 
 ## 中身
 | パス | 内容 |
