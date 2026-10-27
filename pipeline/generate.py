@@ -16,6 +16,7 @@ plan.json の各シーンで、素材（footage/<エピソード>/<source>）が
   GEMINI_IMAGE_MODEL  既定 gemini-2.5-flash-image
   FAL_VIDEO_ENDPOINT  既定 bytedance/seedance-2.0/fast/image-to-video
   MAX_MOTION_SECONDS  1本あたりの動画生成秒数の上限（既定 0 = 動画生成しない＝課金ゼロ）
+  STRICT=1            全自動モード用。素材が1カットでも用意できなければ終了コード1（仮画面のまま投稿しない）
 
     python pipeline/generate.py content/2026-09-27_ep001_mini_ramen
 """
@@ -31,6 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "pipeline"))
 from render import resolve_source  # noqa: E402
+from apiutil import http  # noqa: E402  429/5xx は自動リトライ
 
 GEMINI_MODEL = os.environ.get("GEMINI_IMAGE_MODEL") or "gemini-2.5-flash-image"
 FAL_ENDPOINT = os.environ.get("FAL_VIDEO_ENDPOINT") or "bytedance/seedance-2.0/fast/image-to-video"
@@ -42,15 +44,6 @@ BASE_STYLE = (
     "a real human fingertip or a coin nearby for scale when natural, vertical 9:16 composition, "
     "subject centered with empty space at top and bottom for captions, no text, no letters, no logos, no watermark"
 )
-
-
-def http(url, data=None, headers=None, method=None, timeout=300):
-    body = json.dumps(data).encode() if data is not None else None
-    req = urllib.request.Request(url, data=body, method=method or ("POST" if body else "GET"),
-                                 headers={"Content-Type": "application/json", **(headers or {})})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        raw = r.read()
-    return json.loads(raw) if raw[:1] in (b"{", b"[") else raw
 
 
 def gemini_image(prompt: str, style: str, ref: Path | None) -> bytes:
@@ -136,6 +129,10 @@ def main(ep_dir: Path) -> int:
                 print(f"⏭️  シーン{i}: 生成設定 or APIキー無し → 仮画面")
         except Exception as e:  # 1カット失敗しても他は続ける（仮画面で書き出される）
             print(f"⚠️  シーン{i}: 生成失敗 {e}")
+    missing = [i for i, sc in enumerate(plan["scenes"], 1) if sc.get("source") and not resolve_source(sc["source"], ep_dir)]
+    if missing and os.environ.get("STRICT"):
+        print(f"❌ 素材が用意できなかったシーン: {missing}（仮画面のまま投稿しないよう中止）")
+        return 1
     if credits:  # Pexels API の利用条件：クレジット表記 → 投稿文の末尾に追記
         cap = ep_dir / "caption.txt"
         text = cap.read_text(encoding="utf-8") if cap.exists() else ""

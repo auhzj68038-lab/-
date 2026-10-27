@@ -1,0 +1,109 @@
+# 完全自動運用（毎日 日本時間19:00）
+#   成績取得 → 企画（今日の回が無ければ自動採番で新規）→ 画像 → ナレーション → 書き出し
+#   → ドライブ納品 → YouTube Shorts / TikTok 投稿 → リポジトリに記録 → Discord 通知
+# 安全装置:
+#   - リポジトリの Variables に AUTO_MODE = on を入れるまで定期実行しない（手動実行は可）
+#   - API の一時エラー（429・通信障害）は各工程で最大2回まで、待機してから自動リトライ
+#   - 素材が欠けた（仮画面の）回・投稿済みの回は投稿しない
+name: daily-auto
+
+on:
+  schedule:
+    - cron: "0 10 * * *"   # UTC 10:00 = 日本時間 19:00（GitHub の混雑で数分〜数十分遅れることがあります）
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "テスト実行（SNSには投稿しない）"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: render
+  cancel-in-progress: false
+
+jobs:
+  auto:
+    if: github.event_name == 'workflow_dispatch' || vars.AUTO_MODE == 'on'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TZ: Asia/Tokyo
+      STRICT: "1"
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_TEXT_MODEL: ${{ vars.GEMINI_TEXT_MODEL }}
+      GEMINI_IMAGE_MODEL: ${{ vars.GEMINI_IMAGE_MODEL }}
+      TTS_VOICE: ${{ vars.TTS_VOICE }}
+      GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+      GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+      GDRIVE_REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
+      GDRIVE_FOLDER_ID: ${{ vars.GDRIVE_FOLDER_ID }}
+      UPLOAD_POST_API_KEY: ${{ secrets.UPLOAD_POST_API_KEY }}
+      UPLOAD_POST_USER: ${{ secrets.UPLOAD_POST_USER }}
+      UPLOAD_POST_PLATFORMS: ${{ vars.UPLOAD_POST_PLATFORMS || 'tiktok,youtube' }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
+      LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+      DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 鍵の確認
+        run: |
+          [ -n "$GEMINI_API_KEY" ] || { echo "::error::GEMINI_API_KEY が未登録です（docs/05_setup.md の全自動モード参照）"; exit 1; }
+          [ -n "$GDRIVE_REFRESH_TOKEN" ] || echo "::warning::ドライブの鍵が未登録 → ドライブ納品・成績取得なし"
+          [ -n "$UPLOAD_POST_API_KEY" ] || echo "::warning::Upload-Post の鍵が未登録 → SNS投稿なし"
+          [ -n "$DISCORD_WEBHOOK_URL$LINE_CHANNEL_TOKEN" ] || echo "::warning::通知先が未登録"
+      - run: bash pipeline/setup.sh
+      - name: 成績を取得（伸びた型を企画に反映）
+        continue-on-error: true
+        run: python pipeline/analytics.py
+      - name: 今日の回を決める（無ければ自動企画）
+        id: ep
+        run: |
+          retry() { for i in 1 2 3; do "$@" && return 0; [ $i -lt 3 ] && { echo "↻ 再試行 $i/2（$((i*60))秒後）" >&2; sleep $((i*60)); }; done; return 1; }
+          ep=$(retry python pipeline/autoplan.py pick | tail -n 1)
+          [ -f "content/$ep/plan.json" ] || { echo "::error::企画に失敗しました"; exit 1; }
+          echo "ep=$ep" >> "$GITHUB_OUTPUT"
+          echo "🎬 今日の回: $ep"
+      - name: 素材 → ナレーション → 書き出し → ドライブ納品
+        run: |
+          retry() { for i in 1 2 3; do "$@" && return 0; [ $i -lt 3 ] && { echo "↻ 再試行 $i/2（$((i*60))秒後）"; sleep $((i*60)); }; done; return 1; }
+          ep="${{ steps.ep.outputs.ep }}"
+          python pipeline/qa.py "content/$ep"
+          if [ -n "$GDRIVE_REFRESH_TOKEN" ]; then retry python pipeline/drive.py pull "$ep"; fi
+          retry python pipeline/generate.py "content/$ep"
+          retry python pipeline/tts.py "content/$ep"
+          python pipeline/render.py "content/$ep/plan.json"
+          if [ -n "$GDRIVE_REFRESH_TOKEN" ]; then retry python pipeline/drive.py push "$ep"; fi
+      - name: YouTube Shorts / TikTok に投稿
+        run: |
+          retry() { for i in 1 2 3; do "$@" && return 0; [ $i -lt 3 ] && { echo "↻ 再試行 $i/2（$((i*90))秒後）"; sleep $((i*90)); }; done; return 1; }
+          retry python pipeline/publish.py "content/${{ steps.ep.outputs.ep }}"
+      - name: 企画・投稿記録・成績をリポジトリに保存
+        if: always() && steps.ep.outputs.ep != ''
+        run: |
+          git config user.name "miniature-autopilot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "content/${{ steps.ep.outputs.ep }}"
+          [ -f docs/analytics_auto.json ] && git add docs/analytics_auto.json
+          if git diff --cached --quiet; then echo "変更なし"; exit 0; fi
+          git commit -m "自動運用: ${{ steps.ep.outputs.ep }}"
+          for i in 1 2 3; do git pull --rebase -q && git push -q && break; sleep 10; done
+      - name: 通知（成功）
+        if: success()
+        run: python pipeline/notify.py success "${{ steps.ep.outputs.ep }}"
+      - name: 通知（失敗）
+        if: failure()
+        run: python pipeline/notify.py failure "${{ steps.ep.outputs.ep || '-' }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: daily-${{ steps.ep.outputs.ep || 'failed' }}
+          path: output/
+          retention-days: 14
+          if-no-files-found: ignore

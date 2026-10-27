@@ -17,7 +17,8 @@ from render import resolve_source  # noqa: E402
 EMOJI_RE = re.compile("[\U0001F000-\U0001FFFF☀-➿]")
 
 
-def check(ep_dir: Path) -> int:
+def collect(ep_dir: Path):
+    """(errors, warns, infos, 総尺, カット数) を返す。autoplan.py の自動修正にも使う"""
     errors, warns, infos = [], [], []
     plan = json.loads((ep_dir / "plan.json").read_text(encoding="utf-8"))
     scenes = plan["scenes"]
@@ -76,7 +77,12 @@ def check(ep_dir: Path) -> int:
         if plan.get("ai_generated") and "#AI" not in text and "AI生成" not in text:
             errors.append("AI生成素材を使う回は投稿時に「AI生成コンテンツ」ラベルON＋本文で明記")
 
-    print(f"=== QA: {ep_dir.name}  総尺 {total:.1f}秒 / {len(scenes)}カット ===")
+    return errors, warns, infos, total, len(scenes)
+
+
+def check(ep_dir: Path) -> int:
+    errors, warns, infos, total, n = collect(ep_dir)
+    print(f"=== QA: {ep_dir.name}  総尺 {total:.1f}秒 / {n}カット ===")
     for tag, items in (("❌ ERROR", errors), ("⚠️  WARN ", warns), ("ℹ️  INFO ", infos)):
         for m in items:
             print(f"{tag} {m}")

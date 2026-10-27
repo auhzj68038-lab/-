@@ -286,14 +286,38 @@ def sfx(kind: str) -> np.ndarray:
     return (s * 0.6).astype(np.float32)
 
 
-def build_audio(plan: dict, scenes: list[dict], total: float, base: Path) -> np.ndarray:
+def load_voices(base: Path, n: int) -> list:
+    """pipeline/tts.py が作ったナレーション footage/<ep>/voice_NN.wav を 44.1kHz の配列で読む"""
+    import wave
+    out = []
+    for i in range(1, n + 1):
+        p = ROOT / "footage" / base.name / f"voice_{i:02d}.wav"
+        if not p.exists():
+            out.append(None)
+            continue
+        with wave.open(str(p)) as w:
+            sr, ch = w.getframerate(), w.getnchannels()
+            a = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768
+        if ch == 2:
+            a = a.reshape(-1, 2).mean(axis=1)
+        a = np.interp(np.arange(0, len(a), sr / SR), np.arange(len(a)), a).astype(np.float32)
+        out.append(a)
+    return out
+
+
+def build_audio(plan: dict, scenes: list[dict], total: float, base: Path, voices=None) -> np.ndarray:
     audio = np.zeros(int(total * SR) + SR, dtype=np.float32)
+    voices = voices or [None] * len(scenes)
+    sfx_gain = 0.55 if any(v is not None for v in voices) else 1.0  # 声がある回は効果音を少し下げる
     t0 = 0.0
-    for sc in scenes:
+    for sc, v in zip(scenes, voices):
         for kind in ([sc["sfx"]] if isinstance(sc.get("sfx"), str) else sc.get("sfx", [])):
-            s = sfx(kind)
+            s = sfx(kind) * sfx_gain
             i = int(t0 * SR)
             audio[i:i + len(s)] += s[: len(audio) - i]
+        if v is not None:
+            i = int((t0 + 0.05) * SR)
+            audio[i:i + len(v)] += v[: len(audio) - i] * float(plan.get("voice_volume", 1.0))
         t0 += float(sc["duration"])
     bgm = plan.get("bgm")
     if bgm:
@@ -326,6 +350,10 @@ def compose(plan_path: Path, preview: bool = False) -> Path:
         W, H, fps = W // 2, H // 2, 15
     font = find_font()
     scenes = plan["scenes"]
+    voices = load_voices(base, len(scenes)) if plan.get("voice") is not False else [None] * len(scenes)
+    # ナレーションがカットより長い時は、言い終わるまでカットを伸ばす（声と映像のズレ防止）
+    scenes = [dict(sc, duration=max(float(sc["duration"]), len(v) / SR + 0.2)) if v is not None else sc
+              for sc, v in zip(scenes, voices)]
     sources = [Source(sc, W, H, base) for sc in scenes]
     # 実写っぽい仕上げ: "look": {"handheld": true, "grain": 0.05, "vignette": 0.3}
     look = plan.get("look", {})
@@ -386,7 +414,7 @@ def compose(plan_path: Path, preview: bool = False) -> Path:
     name = plan.get("output_name", base.name) + ("_preview" if preview else "")
     out = out_dir / f"{name}.mp4"
     video = VideoClip(frame_at, duration=total).with_fps(fps)
-    audio = AudioArrayClip(build_audio(plan, scenes, total, base), fps=SR).with_duration(total)
+    audio = AudioArrayClip(build_audio(plan, scenes, total, base, voices), fps=SR).with_duration(total)
     video = video.with_audio(audio)
     video.write_videofile(str(out), codec="libx264", audio_codec="aac", fps=fps,
                           preset="ultrafast" if preview else "medium",

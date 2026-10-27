@@ -90,7 +90,10 @@ def push(svc, root: str, episode: str):
     folder = find_or_create(svc, episode, find_or_create(svc, "完成動画", root))
     for p in targets:
         upload(svc, p, folder, "投稿文.txt" if p.name == "caption.txt" else p.name)
-    print(f"https://drive.google.com/drive/folders/{folder}")
+    url = f"https://drive.google.com/drive/folders/{folder}"
+    if out.exists():
+        (out / "drive_url.txt").write_text(url + "\n")  # notify.py が通知に載せる
+    print(url)
 
 
 def order(svc, root: str, episode: str):

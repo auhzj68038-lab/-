@@ -16,7 +16,10 @@ TikTok [@sho1249003](https://www.tiktok.com/@sho1249003)
 3. 日曜：完成動画を確認 → TikTok Studio で予約投稿（15分）
 4. 日曜：数値のスクショを Claude に送る（3分）
 
-最初の1回だけ [docs/05_setup.md](docs/05_setup.md) の初期設定（約25分・カード登録なし）が必要です。詳細は [docs/02_workflow.md](docs/02_workflow.md)。
+最初の1回だけ [docs/05_setup.md](docs/05_setup.md) の初期設定（約25分・カード登録なし）が必要です。
+
+### 全自動モード（任意・月3,000円前後）
+毎日19:00に「企画→画像→ナレーション→動画→ドライブ→YouTube Shorts / TikTok 投稿→Discord通知」まで無人で回します。設定は [docs/05_setup.md](docs/05_setup.md) 後半の「全自動モード」。詳細は [docs/02_workflow.md](docs/02_workflow.md)。
 
 ## 中身
 | パス | 内容 |
@@ -29,6 +32,12 @@ TikTok [@sho1249003](https://www.tiktok.com/@sho1249003)
 | `pipeline/generate.py` | （将来用・有料API）Gemini API / Seedance API で素材も全自動化。鍵を入れない限り動かない |
 | `.claude/skills/autopilot` | 「今週分つくって」の業務手順 |
 | `pipeline/qa.py` | 伸びる型のルールで自動チェック（冒頭フック・尺・文字数・CTA・ハッシュタグ） |
+| `pipeline/autoplan.py` | 全自動：今日の回を決め、無ければ Gemini で次の番号の回を企画（成績を反映・品質チェックまで自動） |
+| `pipeline/tts.py` | 全自動：テンション高め・英語まじりのナレーションを Gemini TTS で生成 |
+| `pipeline/publish.py` | 全自動：Upload-Post 経由で YouTube Shorts / TikTok に投稿（二重投稿・仮画面の投稿を防止） |
+| `pipeline/analytics.py` | 全自動：YouTube の成績を取得し docs/analytics_auto.json に保存 → 次の企画に反映 |
+| `pipeline/notify.py` | 全自動：成功・失敗と再生数トップ3を Discord（または LINE）に通知 |
+| `.github/workflows/daily-auto.yml` | 全自動：毎日19:00に上をすべて実行（429等は最大2回リトライ）。Variables の AUTO_MODE=on で開始 |
 | `pipeline/drive.py` | Googleドライブから素材取得 / 完成動画を納品 |
 | `.github/workflows/render.yml` | push と2時間ごとに 品質チェック→素材取得→書き出し→納品 を自動実行（無料） |
 | `content/<日付>_epNNN_*/` | 1本ごとの research / script / plan.json / caption / 投稿チェックリスト |
