@@ -58,10 +58,10 @@
 
 ## ステップ5：試運転（3分）
 1. GitHub の上のタブ **Actions** → 左の **render-and-deliver** → 右の **Run workflow**
-2. episode 欄に `2026-09-27_ep001_mini_ramen` → 緑の **Run workflow**
+2. episode 欄に `2026-11-02_ep001_mini_ramen` → 緑の **Run workflow**
 3. 5分ほどで ✅ になり、ドライブに次の2つが届けば成功：
-   - 「素材 / 2026-09-27_ep001_mini_ramen / 素材オーダー表.txt」
-   - 「完成動画 / 2026-09-27_ep001_mini_ramen / 動画（仮画面）」
+   - 「素材 / 2026-11-02_ep001_mini_ramen / 素材オーダー表.txt」
+   - 「完成動画 / 2026-11-02_ep001_mini_ramen / 動画（仮画面）」
 4. あとは素材オーダー表どおり Gemini アプリで画像を3枚作って「素材」フォルダに入れるだけ → 2時間以内に本番の動画が届きます
 
 ❌ 赤くなったら、その画面のスクショを Claude に送ってください。

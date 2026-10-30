@@ -4,7 +4,7 @@
 plan.json と caption.txt を TikTok で伸びる型のルールに照らして自動チェックする。
 ERROR が1つでもあれば終了コード 1（GitHub Actions で書き出しを止める）。
 
-    python pipeline/qa.py content/2026-09-27_ep001_mini_ramen
+    python pipeline/qa.py content/2026-11-02_ep001_mini_ramen
 """
 import json
 import re

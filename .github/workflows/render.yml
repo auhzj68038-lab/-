@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       episode:
-        description: "エピソードフォルダ名（例: 2026-09-27_ep001_mini_ramen）。空なら素材が新しく入った回すべて"
+        description: "エピソードフォルダ名（例: 2026-11-02_ep001_mini_ramen）。空なら素材が新しく入った回すべて"
         required: false
 
 concurrency:

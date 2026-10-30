@@ -14,7 +14,7 @@ footage/<エピソード>/voice_NN.wav に保存する。render.py が自動で�
   TTS_VOICE   既定 Puck（明るい）。Fenrir（勢い）/ Zephyr（明るい女性）/ Leda（若い女性）など
   TTS_STYLE   話し方の指示
 
-    python pipeline/tts.py content/2026-09-27_ep001_mini_ramen
+    python pipeline/tts.py content/2026-11-02_ep001_mini_ramen
 """
 import base64
 import json

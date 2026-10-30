@@ -18,7 +18,7 @@ plan.json の各シーンで、素材（footage/<エピソード>/<source>）が
   MAX_MOTION_SECONDS  1本あたりの動画生成秒数の上限（既定 0 = 動画生成しない＝課金ゼロ）
   STRICT=1            全自動モード用。素材が1カットでも用意できなければ終了コード1（仮画面のまま投稿しない）
 
-    python pipeline/generate.py content/2026-09-27_ep001_mini_ramen
+    python pipeline/generate.py content/2026-11-02_ep001_mini_ramen
 """
 import base64
 import json

@@ -46,8 +46,8 @@ TikTok [@sho1249003](https://www.tiktok.com/@sho1249003)
 ## ローカルで動かす場合
 ```bash
 bash pipeline/setup.sh
-python pipeline/qa.py content/2026-09-27_ep001_mini_ramen
-python pipeline/render.py content/2026-09-27_ep001_mini_ramen/plan.json   # → output/ に mp4
+python pipeline/qa.py content/2026-11-02_ep001_mini_ramen
+python pipeline/render.py content/2026-11-02_ep001_mini_ramen/plan.json   # → output/ に mp4
 ```
 素材が無いカットは「撮影指示付きの仮画面」で書き出されるので、構成の確認にもそのまま使えます。
 

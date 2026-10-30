@@ -1,5 +1,5 @@
 {
-  "title": "1円玉サイズのケーキ屋、ハロウィン限定オープン！",
+  "title": "1円玉サイズのケーキ屋、秋限定オープン！",
   "output_name": "ep002_mini_cake",
   "size": [
     1080,
@@ -33,7 +33,7 @@
         }
       ],
       "gen": {
-        "image": "Extreme macro close-up of a human fingertip holding a tiny pumpkin tart the size of a one-yen coin, decorated with a smiling jack-o-lantern chocolate plate, whipped cream and orange glaze, cute pastel Halloween mood",
+        "image": "Extreme macro close-up of a human fingertip holding a tiny pumpkin tart the size of a one-yen coin, decorated with a tiny chocolate maple leaf, whipped cream and orange glaze, cozy autumn mood",
         "motion": "Camera slowly pushes in, a tiny drop of glaze shines"
       }
     },
@@ -62,7 +62,7 @@
       ],
       "gen": {
         "photo": "本物の1円玉を木の机に置いて、斜め上から撮る",
-        "image": "1円玉の横に、1円玉と同じ直径2cmくらいの小さなかぼちゃタルト（笑顔のかぼちゃのチョコ飾り付き）を置いて。"
+        "image": "1円玉の横に、1円玉と同じ直径2cmくらいの小さなかぼちゃタルト（小さなもみじのチョコ飾り付き）を置いて。"
       }
     },
     {
@@ -77,13 +77,13 @@
       },
       "telop": [
         {
-          "text": "ハロウィン\n限定ショップ!!",
+          "text": "秋限定\nショップ!!",
           "style": "normal",
           "position": "top"
         }
       ],
       "gen": {
-        "image": "Wide shot of a complete miniature cake shop diorama on a wooden desk decorated for a cute pastel Halloween: pastel orange striped awning and smiling pumpkin decorations on the storefront at the top, a glass showcase full of tiny cakes and pumpkin tarts at the bottom, a real human hand resting beside it for scale, soft warm light"
+        "image": "Wide shot of a complete miniature cake shop diorama on a wooden desk decorated for autumn: pastel orange striped awning with tiny maple leaves and pumpkins on the storefront at the top, a glass showcase full of tiny cakes and pumpkin tarts at the bottom, a real human hand resting beside it for scale, soft warm light"
       },
       "crop": [
         0.1,
@@ -135,7 +135,7 @@
       },
       "telop": [
         {
-          "text": "かぼちゃが\n笑ってる!!",
+          "text": "もみじまで\n乗ってる!!",
           "style": "punch",
           "position": "center"
         }

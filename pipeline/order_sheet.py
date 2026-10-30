@@ -4,7 +4,7 @@
 plan.json から「Geminiアプリ（無料）にコピペするだけ」のプロンプト集を作る。
 社長はこれを見て画像を作り、ドライブ「素材/<エピソード>/」に指定のファイル名で保存するだけ。
 
-    python pipeline/order_sheet.py content/2026-09-27_ep001_mini_ramen
+    python pipeline/order_sheet.py content/2026-11-02_ep001_mini_ramen
       → output/<ep>/素材オーダー表.txt
 """
 import json
