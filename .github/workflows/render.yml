@@ -6,8 +6,7 @@ name: render-and-deliver
 on:
   push:
     paths: ["content/**/plan.json", "content/**/caption.txt"]
-  schedule:
-    - cron: "23 */2 * * *"
+  # 企画中止のため定期実行を停止中（再開するときはここに schedule を戻す）
   workflow_dispatch:
     inputs:
       episode:
